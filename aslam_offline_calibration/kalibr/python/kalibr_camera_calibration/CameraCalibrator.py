@@ -4,6 +4,7 @@ from sm import PlotCollection
 from kalibr_common import ConfigReader as cr
 import aslam_cv as acv
 import aslam_cameras_april as acv_april
+import aslam_cameras_charuco as acv_charuco
 import aslam_cv_backend as acvb
 import aslam_backend as aopt
 import incremental_calibration as ic
@@ -115,6 +116,20 @@ class TargetDetector(object):
                                                                  targetParams['tagCols'], 
                                                                  targetParams['tagSize'], 
                                                                  targetParams['tagSpacing'], 
+                                                                 options)
+
+        elif targetType == 'charuco':
+            options = acv_charuco.CharucoOptions()
+            options.showExtractionVideo = showCorners
+
+            print(targetParams)
+            self.grid = acv_charuco.GridCalibrationTargetCharuco(targetParams['tagRows'],
+                                                                 targetParams['tagCols'],
+                                                                 targetParams['tagSize'],
+                                                                 targetParams['tagSpacing'],
+                                                                 targetParams['dictName'],
+                                                                 targetParams['markerSize'],
+                                                                 targetParams['nMarkers'],
                                                                  options)
         else:
             RuntimeError('Unknown calibration target type!')
