@@ -92,7 +92,11 @@ def parseArgs():
     
     groupTarget = parser.add_argument_group('Image synchronization')
     groupTarget.add_argument('--approx-sync', dest='max_delta_approxsync', type=float, default=0.02, help='Time tolerance for approximate image synchronization [s] (default: %(default)s)')
-    
+
+    initSettings = parser.add_argument_group('Initialization')
+    initSettings.add_argument('--init-proj', type=str, nargs='*', dest='initProj', help='Initialize projection parameters by this 4-tuple (one for each camera) (default: empty)')
+    initSettings.add_argument('--init-dist', type=str, nargs='*', dest='initDist', help='Initialize projection parameters by this 4-tuple (one for each camera) (default: empty)')
+
     groupCalibrator = parser.add_argument_group('Calibrator settings')
     groupCalibrator.add_argument('--qr-tol', type=float, default=0.02, dest='qrTol', help='The tolerance on the factors of the QR decomposition (default: %(default)s)')
     groupCalibrator.add_argument('--mi-tol', type=float, default=0.2, dest='miTol', help='The tolerance on the mutual information for adding an image. Higher means fewer images will be added. Use -1 to force all images. (default: %(default)s)')
@@ -184,8 +188,15 @@ def main():
             for obs in observations:
                 obsdb.addObservation(cam_id, obs)
 
+            proj_init = None
+            dist_init = None
+            if parsed.initProj is not None and len(parsed.initProj) >= cam_id:
+                proj_init = np.array(list(map(float, parsed.initProj[cam_id].split(','))))
+            if parsed.initDist is not None and len(parsed.initDist) >= cam_id:
+                dist_init = np.array(list(map(float, parsed.initDist[cam_id].split(','))))
+
             #initialize the intrinsics
-            if not cam.initGeometryFromObservations(observations):
+            if not cam.initGeometryFromObservations(observations, proj_init, dist_init):
                 raise RuntimeError("Could not initialize the intrinsics for camera with topic: {0}. Try to use --verbose and check whether the calibration target extraction is successful.".format(topic))
             
             print("\tProjection initialized to: %s" % cam.geometry.projection().getParameters().flatten())

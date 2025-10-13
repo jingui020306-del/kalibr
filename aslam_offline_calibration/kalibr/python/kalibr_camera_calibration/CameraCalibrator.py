@@ -53,12 +53,17 @@ class CameraGeometry(object):
         self.dv.distortionDesignVariable().setActive(distortionActive)
         self.dv.shutterDesignVariable().setActive(shutterActice)
 
-    def initGeometryFromObservations(self, observations):
+    def initGeometryFromObservations(self, observations, init_proj=None, init_dist=None):
         #obtain focal length guess
         success = self.geometry.initializeIntrinsics(observations)
         if not success:
             sm.logError("initialization of focal length for cam with topic {0} failed  ".format(self.dataset.topic))
-        
+
+        if init_proj is not None:
+            self.geometry.projection().setParameters(init_proj)
+        if init_dist is not None:
+            self.geometry.projection().distortion().setParameters(init_dist)
+
         #in case of an omni model, first optimize over intrinsics only
         #(--> catch most of the distortion with the projection model)
         if self.model == acvb.DistortedOmni:
