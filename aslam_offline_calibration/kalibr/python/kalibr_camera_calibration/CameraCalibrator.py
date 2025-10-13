@@ -8,6 +8,7 @@ import aslam_cameras_charuco as acv_charuco
 import aslam_cv_backend as acvb
 import aslam_backend as aopt
 import incremental_calibration as ic
+import kalibr_common as kc
 import kalibr_camera_calibration as kcc
 
 from matplotlib.backends.backend_pdf import PdfPages
@@ -47,6 +48,10 @@ class CameraGeometry(object):
 
         #create target detector
         self.ctarget = TargetDetector(targetConfig, self.geometry, showCorners=verbose)
+
+        if isinstance(dataset, kc.CvatImageDatasetReader):
+            self.ctarget.detector = kc.CvatImageDatasetDetector(
+                dataset, self.ctarget.grid, self.geometry, showCorners=verbose)
 
     def setDvActiveStatus(self, projectionActive, distortionActive, shutterActice):
         self.dv.projectionDesignVariable().setActive(projectionActive)
