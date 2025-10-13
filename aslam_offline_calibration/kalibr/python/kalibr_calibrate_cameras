@@ -273,8 +273,12 @@ def main():
                 for bidx, baseline in enumerate(calibrator.baselines):
                     est_baselines.append( sm.Transformation(baseline.T()) )
                 T_tc_guess = graph.getTargetPoseGuess(timestamp, cameraList, est_baselines)
-                               
-                success = calibrator.addTargetView(timestamp, obs_tuple, T_tc_guess)
+
+                if T_tc_guess is not None:
+                    success = calibrator.addTargetView(timestamp, obs_tuple, T_tc_guess)
+                else:
+                    success = False
+                    sm.logInfo("Skipping view %r because target pose cannot be estimated" % (view_id,))
                 
                 #display process
                 if (verbose or (view_id % 25) == 0) and calibrator.estimator.getNumBatches()>0 and view_id>1:
