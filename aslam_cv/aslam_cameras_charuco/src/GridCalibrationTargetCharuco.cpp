@@ -16,8 +16,8 @@ namespace aslam {
 namespace cameras {
 
 /// \brief Construct a Charuco calibration target
-///        tagCols:    number of chessboard squares in x-direction (= OpenCV squaresX)
 ///        tagRows:    number of chessboard squares in y-direction (= OpenCV squaresY)
+///        tagCols:    number of chessboard squares in x-direction (= OpenCV squaresX)
 ///        tagSize:    ArUco marker side length [m] (= OpenCV markerLength)
 ///        tagSpacing: ratio such that chessboard square length = tagSize * (1 + tagSpacing)
 ///                    i.e. tagSpacing = squareLength/markerLength - 1
